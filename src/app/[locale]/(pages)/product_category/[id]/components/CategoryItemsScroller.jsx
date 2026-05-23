@@ -60,44 +60,53 @@ const CategoryItemsScroller = ({
 
           <div
             ref={containerRef}
-            className="flex gap-3 sm:gap-4 overflow-x-auto scrollbar-hide pb-2 px-6 sm:px-0 items-center"
+            className="flex gap-3 sm:gap-4 lg:gap-5 overflow-x-auto scrollbar-hide pb-3 px-6 sm:px-0 items-center snap-x snap-mandatory"
           >
             {items.map((item) => {
               const itemTitle = locale === "ar" ? item.name_ar : item.name;
               const thumbnail =
-                getCategoryImageUrl(item.img_url, 56) ||
+                getCategoryImageUrl(item.img_url, 200) ||
                 "/images/no-available.png";
+              const isSelected =
+                isSubCategoryList && selectedSubCategory === item.name_search;
+
+              const card = (
+                <div
+                  className={`relative w-28 sm:w-36 lg:w-44 rounded-2xl overflow-hidden border transition-all duration-500 ${
+                    isSelected
+                      ? "border-amber-300/80 ring-2 ring-amber-400/60 shadow-lg"
+                      : "border-gray-200/80 dark:border-gray-700/60 shadow-sm hover:shadow-xl"
+                  } bg-white dark:bg-gray-800 `}
+                >
+                  <div className="relative aspect-square overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent z-10" />
+                    <Image
+                      src={thumbnail}
+                      alt={itemTitle}
+                      fill
+                      sizes="(max-width: 640px) 112px, (max-width: 1024px) 144px, 176px"
+                      className="object-cover transition-transform duration-700 group-hover:scale-110"
+                      loading="lazy"
+                    />
+                    <div className="absolute bottom-3 left-3 right-3 z-20">
+                      <div className="inline-flex items-center gap-2 rounded-full bg-white/90 dark:bg-gray-900/80 px-2.5 py-0.5 text-[9px] sm:text-[11px] font-semibold text-gray-900 dark:text-gray-100 shadow-md">
+                        {itemTitle}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
 
               if (isSubCategoryList) {
-                const isSelected = selectedSubCategory === item.name_search;
-
                 return (
                   <button
                     key={item.name_search}
                     onClick={() => onSubCategorySelect(item.name_search)}
-                    className={`flex-shrink-0 group cursor-pointer my-0.5 p-3 sm:p-4 rounded-xl min-w-[100px] sm:min-w-[120px] transition-all duration-300 border ${
-                      isSelected
-                        ? "border-amber-300 bg-amber-50/50 dark:bg-amber-900/10"
-                        : "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700"
-                    }`}
+                    className="flex-shrink-0 group cursor-pointer my-0.5 snap-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60"
+                    aria-pressed={isSelected}
+                    type="button"
                   >
-                    <div className="flex flex-col items-center space-y-2">
-                      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg overflow-hidden bg-white dark:bg-gray-700 shadow-[0_0_0_2px_rgba(212,184,20,0.25)]">
-                        <Image
-                          src={thumbnail}
-                          alt={itemTitle}
-                          className="w-full h-full object-cover rounded-xl"
-                          width={56}
-                          height={56}
-                          loading="lazy"
-                        />
-                      </div>
-                      <div className="text-center">
-                        <h3 className="font-medium text-xs sm:text-sm text-gray-700 dark:text-gray-300 leading-tight">
-                          {itemTitle}
-                        </h3>
-                      </div>
-                    </div>
+                    {card}
                   </button>
                 );
               }
@@ -106,29 +115,9 @@ const CategoryItemsScroller = ({
                 <Link
                   href={`/product_category/${item.name_search}`}
                   key={item.name_search}
-                  className="flex-shrink-0 group cursor-pointer my-0.5"
+                  className="flex-shrink-0 group cursor-pointer my-0.5 snap-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60"
                 >
-                  <div className="flex flex-col items-center space-y-2 p-3 sm:p-4 rounded-xl bg-gray-50 dark:bg-gray-800 transition-all duration-300 border border-gray-200 dark:border-gray-700 min-w-[100px] sm:min-w-[120px] hover:shadow-md hover:-translate-y-0.5 hover:border-amber-300 dark:hover:border-amber-500 hover:bg-amber-50/50 dark:hover:bg-amber-900/10">
-                    <div className="relative">
-                      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg overflow-hidden transition-all duration-300 bg-white dark:bg-gray-700 shadow-[0_0_0_2px_rgba(212,184,20,0.25)] group-hover:shadow-[0_0_0_2px_rgba(237,214,88,1)]">
-                        <Image
-                          src={thumbnail}
-                          alt={itemTitle}
-                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110 rounded-xl"
-                          fill
-                          sizes="(max-width: 640px) 56px, 56px"
-                          loading="lazy"
-                        />
-                      </div>
-                      <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 ring-2 ring-white dark:ring-gray-800 bg-amber-400" />
-                    </div>
-
-                    <div className="text-center">
-                      <h3 className="font-medium text-xs sm:text-sm text-gray-700 dark:text-gray-300 transition-colors duration-300 leading-tight group-hover:text-amber-500 dark:group-hover:text-amber-400">
-                        {itemTitle}
-                      </h3>
-                    </div>
-                  </div>
+                  {card}
                 </Link>
               );
             })}
