@@ -21,6 +21,7 @@ const CustomerReviews = ({
   const locale = useLocale();
   const [expanded, setExpanded] = useState(true);
   const [visibleCount, setVisibleCount] = useState(3);
+  const isRatingSelected = Number(rating) >= 1;
 
   const averageRating = comments.length
     ? comments.reduce((acc, c) => acc + (c.rating || 0), 0) / comments.length
@@ -196,7 +197,7 @@ const CustomerReviews = ({
 
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || !isRatingSelected}
                 className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white font-semibold py-3 rounded-xl shadow hover:shadow-lg transition disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? t("sending") : t("submitReview")}
