@@ -115,12 +115,12 @@ const ProductGallery = ({ images = [], productTitle = "" }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-3 backdrop-blur-sm sm:p-4 lg:p-8"
             onClick={() => setIsZoomed(false)}
           >
             <button
               onClick={() => setIsZoomed(false)}
-              className="absolute top-6 right-6 bg-white/10 text-white p-3 rounded-full hover:bg-white/20"
+              className="absolute right-3 top-3 rounded-full bg-white/10 p-2.5 text-white transition-colors hover:bg-white/20 sm:right-4 sm:top-4 sm:p-3 lg:right-6 lg:top-6"
               aria-label={t("close")}
             >
               <X className="w-6 h-6" />
@@ -129,14 +129,15 @@ const ProductGallery = ({ images = [], productTitle = "" }) => {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="max-w-[90vw] max-h-[90vh]"
+              className="flex max-h-[92vh] w-[96vw] max-w-[1400px] items-center justify-center overflow-hidden rounded-3xl bg-black/20 shadow-2xl ring-1 ring-white/10 sm:w-[94vw] lg:w-[88vw]"
             >
               <Image
                 src={currentImage}
                 alt={t("zoomAlt")}
-                width={1200}
-                height={1200}
-                className="object-contain w-full h-full"
+                width={1600}
+                height={1600}
+                sizes="(max-width: 640px) 96vw, (max-width: 1024px) 94vw, 88vw"
+                className="h-auto w-full max-h-[92vh] object-contain"
               />
             </motion.div>
           </motion.div>
