@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { addComment, fetchProductComments, linkCommentToProduct } from "../product.api";
 
 export const useProductReviews = ({ productId, initialComments = [], t }) => {
-  const [rating, setRating] = useState(3);
+  const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -43,7 +43,8 @@ export const useProductReviews = ({ productId, initialComments = [], t }) => {
   const handleSubmitReview = useCallback(
     async (event) => {
       event.preventDefault();
-      if (!name || !email || !review) {
+      const numericRating = Number(rating) || 0;
+      if (!name || !email || !review || numericRating < 1) {
         toast.error(t("fillAllFields"));
         return;
       }
@@ -53,7 +54,7 @@ export const useProductReviews = ({ productId, initialComments = [], t }) => {
         id_product: productId,
         name,
         email,
-        rating: Math.max(1, Number(rating) || 1),
+        rating: Math.min(5, Math.max(1, numericRating)),
         avis: review,
         createdAt: new Date().toISOString(),
       };
@@ -79,7 +80,7 @@ export const useProductReviews = ({ productId, initialComments = [], t }) => {
         setName("");
         setEmail("");
         setReview("");
-        setRating(3);
+        setRating(0);
         toast.success(t("thankYouForReview"));
       } catch (error) {
         console.error("Error submitting review:", error);
