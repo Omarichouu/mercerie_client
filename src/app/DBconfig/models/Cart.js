@@ -29,6 +29,8 @@ const CartSchema = new Schema({
   }
 }, { timestamps: true });
 
+CartSchema.index({ id_user: 1 });
+
 
 // Create a model based on that schema
 const CartModal = models.Cart || mongoose.model("Cart", CartSchema);

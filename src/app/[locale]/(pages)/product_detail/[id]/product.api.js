@@ -58,6 +58,12 @@ export const linkCommentToProduct = ({ productId, commentId }) =>
     body: JSON.stringify({ _id: productId, id_comment: commentId }),
   });
 
+export const fetchProductComments = (productId) =>
+  requestJson(`${BASE_URL}/api/get_comments_by_product?id=${productId}`, {
+    method: "GET",
+    cache: "no-store",
+  });
+
 export const fetchRelatedProducts = (productId, limit = 8) =>
   requestJson(
     `${BASE_URL}/api/get_related_products?id=${productId}&limit=${limit}`

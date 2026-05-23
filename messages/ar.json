@@ -133,6 +133,7 @@
     "thumbnailAlt": "مصغرة {index}",
     "zoomAlt": "تكبير الصورة",
     "reviewsCount": "{count} تقييمات",
+    "noRating": "لا توجد تقييمات",
     "youSave": "أنت توفر {amount} دج",
     "specialOffers": "عروض خاصة",
     "buyXSave": "اشترِ <strong>{qty}</strong> وحدة ووفر <strong>{amount} دج</strong>",

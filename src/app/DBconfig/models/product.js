@@ -37,5 +37,7 @@ const productSchema = new Schema({
   createdAt: { type: Date, default: Date.now } // Nouvel attribut ajouté ici
 });
 
+productSchema.index({ purchaseCount: -1 });
+
 const ProductModal = models.Product || mongoose.model("Product", productSchema);
 module.exports = ProductModal;

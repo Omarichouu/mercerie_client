@@ -21,11 +21,13 @@ export async function POST(request) {
 
   // 3- add data
 
-   const my_data=   await CommentsModal.create({
-    name: objFromFrontEnd.name,
-    email: objFromFrontEnd.email,
-    avis : objFromFrontEnd.avis,
-   });
+  const my_data = await CommentsModal.create({
+   id_product: objFromFrontEnd.id_product,
+   name: objFromFrontEnd.name,
+   email: objFromFrontEnd.email,
+   avis: objFromFrontEnd.avis || objFromFrontEnd.review || "",
+   rating: Number(objFromFrontEnd.rating) || 1,
+  });
 
 
   // 4- Go back to frontend

@@ -40,9 +40,19 @@ const buildSearchResult = (product, locale) => {
         ? price + reductionValue
         : 0;
 
+  const resolveId = (p) => {
+    const val = p?._id ?? p?.id ?? "";
+    if (!val) return "";
+    if (typeof val === "string") return val;
+    if (typeof val.toString === "function") return val.toString();
+    return String(val);
+  };
+
+  const idStr = resolveId(product);
+
   return {
-    id: product?._id || "",
-    href: `/product_detail/${product?._id || ""}`,
+    id: idStr,
+    href: `/product_detail/${idStr}`,
     title: getLocalizedTitle(product?.title, locale) || "Produit",
     imageUrl:
       optimizeCloudinaryUrl(product?.array_ProductImg?.[0]?.secure_url) ||

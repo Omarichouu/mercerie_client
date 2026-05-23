@@ -49,12 +49,12 @@ const CustomerReviews = ({
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
-                    className={`w-4 h-4 ${i < Math.round(averageRating) ? "text-[#D4B814] fill-[#D4B814]" : "text-gray-300 dark:text-gray-600"}`}
+                    className={`w-4 h-4 ${i < Math.round(averageRating) ? "text-amber-500 fill-amber-500" : "text-gray-300 dark:text-gray-600"}`}
                   />
                 ))}
               </div>
               <span>
-                {averageRating.toFixed(1)} ({t("reviewsCount", { count: comments.length })})
+                {(averageRating.toFixed(1) > 0 ? averageRating.toFixed(1) : t("noRating"))} ({t("reviewsCount", { count: comments.length })})
               </span>
             </div>
           </div>

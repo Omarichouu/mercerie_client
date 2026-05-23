@@ -4,11 +4,42 @@ export const useVariantSelection = ({ product, locale, modelLabel }) => {
   const [selectedVariants, setSelectedVariants] = useState({});
   const [selectedColorImage, setSelectedColorImage] = useState(null);
 
+  const getColorId = useCallback((color) => {
+    const raw = color?._id ?? color?.id;
+    if (!raw) return "";
+    if (typeof raw === "string") return raw;
+    if (typeof raw?.toString === "function") return raw.toString();
+    return String(raw);
+  }, []);
+
   const activeVariantColors = useMemo(
     () =>
       (product?.variant_color || []).filter((item) => item.isActive !== false),
     [product?.variant_color]
   );
+
+  const colorAliases = useMemo(() => {
+    const map = new Map();
+
+    activeVariantColors.forEach((color) => {
+      const id = getColorId(color);
+      const type = color?.type || "";
+
+      if (id) {
+        const byId = new Set([id]);
+        if (type) byId.add(type);
+        map.set(id, byId);
+      }
+
+      if (type) {
+        const byType = map.get(type) || new Set([type]);
+        if (id) byType.add(id);
+        map.set(type, byType);
+      }
+    });
+
+    return map;
+  }, [activeVariantColors, getColorId]);
 
   const activeVariants = useMemo(
     () => (product?.variant || []).filter((item) => item.isActive !== false),
@@ -42,14 +73,26 @@ export const useVariantSelection = ({ product, locale, modelLabel }) => {
   const selectionState = useMemo(() => {
     const state = {};
     if (selectedColorImage?.type) {
+      const selectedColorId = getColorId(selectedColorImage);
       state.couleur = {
-        value: selectedColorImage.type,
+        value: selectedColorId || selectedColorImage.type,
+        type: selectedColorImage.type,
+        id: selectedColorId,
         priceAdjustment: selectedColorImage.priceAdjustment || 0,
       };
     }
     Object.assign(state, selectedVariants);
     return state;
-  }, [selectedColorImage, selectedVariants]);
+  }, [getColorId, selectedColorImage, selectedVariants]);
+
+  const getCandidateValues = useCallback(
+    (type, value) => {
+      if (type !== "couleur") return [value];
+      const aliasSet = colorAliases.get(value);
+      return aliasSet ? Array.from(aliasSet) : [value];
+    },
+    [colorAliases]
+  );
 
   const resetSelectionsAfter = useCallback(
     (currentSelections, changedType) => {
@@ -69,11 +112,14 @@ export const useVariantSelection = ({ product, locale, modelLabel }) => {
     (type, value) => {
       if (activeCombinations.length === 0) return true;
 
+      const candidateValues = getCandidateValues(type, value);
+
       const relevantCombos = activeCombinations.filter((combo) => {
         const comboOptions = combo.options || [];
-        const hasOption = comboOptions.some(
-          (opt) => opt.type === type && opt.value === value
-        );
+        const hasOption = comboOptions.some((opt) => {
+          if (opt.type !== type) return false;
+          return candidateValues.includes(opt.value);
+        });
         if (!hasOption) return false;
 
         const matchesAllSelections = Object.entries(selectionState).every(
@@ -82,8 +128,14 @@ export const useVariantSelection = ({ product, locale, modelLabel }) => {
             if (selectedType === type) return true;
             const selectedValue = selectedObj.value;
             if (!selectedValue) return true;
+            const selectedCandidates = getCandidateValues(
+              selectedType,
+              selectedValue
+            );
             return comboOptions.some(
-              (opt) => opt.type === selectedType && opt.value === selectedValue
+              (opt) =>
+                opt.type === selectedType &&
+                selectedCandidates.includes(opt.value)
             );
           }
         );
@@ -93,7 +145,7 @@ export const useVariantSelection = ({ product, locale, modelLabel }) => {
 
       return relevantCombos.length > 0;
     },
-    [activeCombinations, selectionState]
+    [activeCombinations, getCandidateValues, selectionState]
   );
 
   const handleVariantSelect = useCallback(
@@ -120,7 +172,11 @@ export const useVariantSelection = ({ product, locale, modelLabel }) => {
   const handleColorSelect = useCallback(
     (color) => {
       setSelectedColorImage((prev) => {
-        const isAlreadySelected = prev?.type === color.type;
+        const prevColorId = getColorId(prev);
+        const nextColorId = getColorId(color);
+        const isAlreadySelected = nextColorId
+          ? prevColorId === nextColorId
+          : prev?.type === color?.type;
         if (isAlreadySelected) {
           return null;
         }
@@ -128,7 +184,7 @@ export const useVariantSelection = ({ product, locale, modelLabel }) => {
       });
       setSelectedVariants((prev) => resetSelectionsAfter(prev, "couleur"));
     },
-    [resetSelectionsAfter]
+    [getColorId, resetSelectionsAfter]
   );
 
   const currentPrice = useMemo(() => {

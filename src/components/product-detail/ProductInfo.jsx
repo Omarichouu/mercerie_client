@@ -41,7 +41,7 @@ const ProductInfo = ({ product, currentPrice, locale = "fr" }) => {
           <span className="text-3xl md:text-4xl font-bold text-[#D4B814]">
             {currentPrice.toLocaleString()} DZD
           </span>
-          {product.ancien_price  && product.ancien_price > product.price && (
+          {/* {product.ancien_price  && product.ancien_price > product.price && (
             <>
               <span className="text-lg line-through text-gray-500 dark:text-gray-400">
                 {product.ancien_price.toLocaleString()} DZD
@@ -50,7 +50,7 @@ const ProductInfo = ({ product, currentPrice, locale = "fr" }) => {
                 -{discountPercentage}%
               </span>
             </>
-          )}
+          )} */}
         </div>
         {discountPercentage > 0 && (
           <p className="text-sm text-green-600 dark:text-green-400">

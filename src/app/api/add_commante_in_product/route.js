@@ -1,6 +1,7 @@
 import ProductModal from "app/DBconfig/models/product";
 import { connectMongoDB } from "app/DBconfig/mongodb";
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 
 
 
@@ -28,6 +29,13 @@ export async function PUT(request) {
       },
     }
   );
+
+  const productId =
+    objFromFrontEnd._id?.toString?.() || String(objFromFrontEnd._id || "");
+  if (productId) {
+    revalidateTag(`product:${productId}`);
+    revalidateTag(`comments:${productId}`);
+  }
 
   // 4- Go back to frontend
   return NextResponse.json({});

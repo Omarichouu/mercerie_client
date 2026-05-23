@@ -9,7 +9,7 @@ const CommentsSchema = new Schema({
     name: String,
     email: String,
     avis : String,
-    rating : Number,
+    rating : { type: Number, default: 1 },
     createdAt: { type: Date, default: Date.now }, // Date de création
 });
 

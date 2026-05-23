@@ -45,7 +45,7 @@ const ProductDetailContent = ({
           {isProductAvailable ? t("productAvailable") : t("productNotAvailable")}
         </span>
         <span className="text-xs font-medium uppercase tracking-[0.16em]">
-          {isProductAvailable ? "OK" : t("outOfStock")}
+          {isProductAvailable ? "" : t("outOfStock")}
         </span>
       </div>
 

@@ -1,15 +1,37 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-import { addComment, linkCommentToProduct } from "../product.api";
+import { addComment, fetchProductComments, linkCommentToProduct } from "../product.api";
 
 export const useProductReviews = ({ productId, initialComments = [], t }) => {
-  const [rating, setRating] = useState(0);
+  const [rating, setRating] = useState(3);
   const [review, setReview] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [comments, setComments] = useState(initialComments);
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+
+  useEffect(() => {
+    let isActive = true;
+
+    const loadFreshComments = async () => {
+      if (!productId) return;
+      try {
+        const fresh = await fetchProductComments(productId);
+        if (isActive && Array.isArray(fresh)) {
+          setComments(fresh);
+        }
+      } catch (error) {
+        console.warn("Failed to refresh comments", error);
+      }
+    };
+
+    loadFreshComments();
+
+    return () => {
+      isActive = false;
+    };
+  }, [productId]);
 
   const handleFieldChange = useCallback((event) => {
     const { name: fieldName, value } = event.target;
@@ -28,9 +50,10 @@ export const useProductReviews = ({ productId, initialComments = [], t }) => {
 
       setIsSubmittingReview(true);
       const newComment = {
+        id_product: productId,
         name,
         email,
-        rating,
+        rating: Math.max(1, Number(rating) || 1),
         avis: review,
         createdAt: new Date().toISOString(),
       };
@@ -42,11 +65,21 @@ export const useProductReviews = ({ productId, initialComments = [], t }) => {
           commentId: commentResponse._id,
         });
 
-        setComments((prev) => [...prev, newComment]);
+        try {
+          const fresh = await fetchProductComments(productId);
+          if (Array.isArray(fresh)) {
+            setComments(fresh);
+          } else {
+            setComments((prev) => [...prev, newComment]);
+          }
+        } catch (error) {
+          console.warn("Failed to reload comments after submit", error);
+          setComments((prev) => [...prev, newComment]);
+        }
         setName("");
         setEmail("");
         setReview("");
-        setRating(0);
+        setRating(3);
         toast.success(t("thankYouForReview"));
       } catch (error) {
         console.error("Error submitting review:", error);

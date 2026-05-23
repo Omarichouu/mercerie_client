@@ -1,25 +1,16 @@
-import ProductModal from "app/DBconfig/models/product";
-import { connectMongoDB } from "app/DBconfig/mongodb";
-
+import { getTopProducts } from "lib/top-products";
 import { NextResponse } from "next/server";
 
 
 export async function GET(request) {
 
-  // 2 connect to DB
-  await connectMongoDB();
-
-// 3- Delete data
-// 2- get data 
-
-const arr_data = await ProductModal.find({})
-.sort({ purchaseCount: -1 })
-.limit(15); // Limite à 15 produits les plus achetés
+const arr_data = await getTopProducts();
 
 
-
-  // 4- Go back to frontend
-  return NextResponse.json(arr_data);
+  // 4- Go back to frontend with cache headers for CDN / proxy
+  const res = NextResponse.json(arr_data);
+  res.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
+  return res;
 }
 
 

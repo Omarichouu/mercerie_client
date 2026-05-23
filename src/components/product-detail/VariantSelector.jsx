@@ -18,6 +18,14 @@ const VariantSelector = ({
   const t = useTranslations("ProductDetail");
   const [zoomedImage, setZoomedImage] = useState(null);
 
+  const getColorId = (color) => {
+    const raw = color?._id ?? color?.id;
+    if (!raw) return "";
+    if (typeof raw === "string") return raw;
+    if (typeof raw?.toString === "function") return raw.toString();
+    return String(raw);
+  };
+
   useEffect(() => {
     console.group('🎨 VariantSelector Debug');
     console.groupEnd();
@@ -41,7 +49,6 @@ const VariantSelector = ({
       {product.variant_color?.length > 0 && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{t("color")}</h3>
             {selectedColorImage?.type && (
               <motion.span
                 initial={{ opacity: 0 }}
@@ -54,10 +61,14 @@ const VariantSelector = ({
           </div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             {product.variant_color.map((item, idx) => {
-              const isActive = selectedColorImage?.type === item.type;
+              const selectedColorId = getColorId(selectedColorImage);
+              const itemColorId = getColorId(item);
+              const isActive = itemColorId
+                ? selectedColorId === itemColorId
+                : selectedColorImage?.type === item.type;
               const isSelectable = 
                 item.isActive !== false && 
-                isOptionAvailable("couleur", item.type);
+                isOptionAvailable("couleur", itemColorId || item.type);
               return (
                 <motion.div
                   key={item.type + idx}
@@ -111,8 +122,10 @@ const VariantSelector = ({
                       <p className={`text-sm font-bold ${isActive ? "text-[#F1D65C]" : "text-white"}`}>
                         {item.type}
                       </p>
-                      {item.priceAdjustment > 0 && (
-                        <p className="mt-0.5 text-xs text-white/90">+{item.priceAdjustment} DA</p>
+                      {item.priceAdjustment > 0 ? (
+                        <p className="mt-0.5 text-xs text-white/90">{item.priceAdjustment + product.price} DA</p>
+                      ) : (
+                        <p className="mt-0.5 text-xs text-white/90">{product.price} DA</p>
                       )}
                       {!isSelectable && (
                         <p className="mt-0.5 text-[10px] font-bold text-red-300">{t("inactive")}</p>
@@ -233,12 +246,12 @@ const VariantSelector = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-3 backdrop-blur-sm sm:p-4 lg:p-8"
             onClick={() => setZoomedImage(null)}
           >
             <button
               onClick={() => setZoomedImage(null)}
-              className="absolute top-6 right-6 bg-white/10 text-white p-3 rounded-full hover:bg-white/20 z-10 transition-colors"
+              className="absolute right-3 top-3 z-10 rounded-full bg-white/10 p-2.5 text-white transition-colors hover:bg-white/20 sm:right-4 sm:top-4 sm:p-3 lg:right-6 lg:top-6"
               aria-label={t("close")}
             >
               <X className="w-6 h-6" />
@@ -247,15 +260,16 @@ const VariantSelector = ({
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="max-w-[90vw] max-h-[90vh] relative"
+              className="relative flex max-h-[92vh] w-[96vw] max-w-[1400px] items-center justify-center overflow-hidden rounded-3xl bg-black/20 shadow-2xl ring-1 ring-white/10 sm:w-[94vw] lg:w-[88vw]"
               onClick={(e) => e.stopPropagation()}
             >
               <Image
                 src={zoomedImage}
                 alt={t("zoomAlt")}
-                width={1200}
-                height={1200}
-                className="w-full h-full object-contain"
+                width={1600}
+                height={1600}
+                sizes="(max-width: 640px) 96vw, (max-width: 1024px) 94vw, 88vw"
+                className="h-auto w-full max-h-[92vh] object-contain"
               />
             </motion.div>
           </motion.div>

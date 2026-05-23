@@ -132,6 +132,7 @@
     "thumbnailAlt": "Miniature {index}",
     "zoomAlt": "Zoom de l'image",
     "reviewsCount": "{count, plural, one {# avis client} other {# avis clients}}",
+    "noRating": "Aucune note",
     "youSave": "Vous économisez {amount} DZD",
     "specialOffers": "Offres spéciales",
     "buyXSave": "Achetez <strong>{qty}</strong> unités et économisez <strong>{amount} DZD</strong>",

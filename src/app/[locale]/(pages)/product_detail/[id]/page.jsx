@@ -14,11 +14,24 @@ import {
 const BASE_URL = process.env.NEXT_PUBLIC_MY_URL || "";
 const DEFAULT_REVALIDATE_SECONDS = 3600;
 
+const isLikelyObjectId = (s) => {
+  return typeof s === "string" && /^[0-9a-fA-F]{24}$/.test(s);
+};
+
 const fetchProduct = async (id) => {
+  if (!id || !isLikelyObjectId(id)) {
+    console.warn("fetchProduct called with invalid id:", id);
+    return null;
+  }
+
   try {
-    const res = await fetch(`${BASE_URL}/api/get_one_product?id=${id}`, {
+    const url = `${BASE_URL || ''}/api/get_one_product?id=${encodeURIComponent(id)}`;
+    const res = await fetch(url, {
       headers: { "Content-Type": "application/json" },
-      next: { revalidate: DEFAULT_REVALIDATE_SECONDS },
+      next: {
+        revalidate: DEFAULT_REVALIDATE_SECONDS,
+        tags: [`product:${id}`, `comments:${id}`],
+      },
     });
 
     if (!res.ok) {
@@ -66,7 +79,8 @@ const fetchMinPrice = async () => {
 };
 
 export async function generateMetadata({ params }) {
-  const { id } = params;
+  const resolvedParams = await params;
+  const { id } = resolvedParams;
   const product = await fetchProduct(id);
 
   if (!product) {
@@ -108,7 +122,8 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function Page({ params }) {
-  const { id } = params;
+  const resolvedParams = await params;
+  const { id } = resolvedParams;
   const product = await fetchProduct(id);
   const priceMin = await fetchMinPrice();
 

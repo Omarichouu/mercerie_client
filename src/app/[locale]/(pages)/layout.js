@@ -161,6 +161,7 @@ export default async function RootLayout({ children, params }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <FacebookPixel />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -181,7 +182,6 @@ export default async function RootLayout({ children, params }) {
                 />
 
                 {/* <ScrollTop /> */}
-                <FacebookPixel />
 
                 <Header />
 

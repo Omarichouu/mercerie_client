@@ -45,10 +45,19 @@ export const buildProductCardModel = ({
   const title = getLocalizedTitle(product?.title, locale) || "Produit";
   const images = product?.array_ProductImg || [];
   const cardWidth = variant === "carousel" ? 300 : viewMode === "list" ? 400 : 300;
+  const resolveId = (p) => {
+    const val = p?._id ?? p?.id ?? "";
+    if (!val) return "";
+    if (typeof val === "string") return val;
+    if (typeof val.toString === "function") return val.toString();
+    return String(val);
+  };
+
+  const idStr = resolveId(product);
 
   return {
-    id: product?._id || "",
-    href: `/product_detail/${product?._id || ""}`,
+    id: idStr,
+    href: `/product_detail/${idStr}`,
     title,
     price: product?.price || 0,
     oldPrice: product?.ancien_price || 0,

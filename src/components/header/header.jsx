@@ -496,8 +496,8 @@ const Header = () => {
                   }`}
                 >
                   {filteredData.map((product, index) => (
-                    <Link
-                      href={`/product_detail/${product._id}`}
+                      <Link
+                        href={`/product_detail/${product._id && product._id.toString ? product._id.toString() : product._id}`}
                       key={index}
                       className="block p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
                       onClick={() => {

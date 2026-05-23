@@ -73,9 +73,12 @@ const fetchCategoryProducts = async ({ id, page, search, sortBy, sub }) => {
 };
 
 export async function generateMetadata({ params }) {
-  const { id } = params;
-  const title = `${id.replace(/-/g, " ")} | VotreBoutique`;
-  const description = `Découvrez nos produits ${id.replace(/-/g, " ")}.`;
+  const resolvedParams = await params;
+  const rawId = getParamValue(resolvedParams, "id");
+  const safeId = typeof rawId === "string" ? rawId : "categorie";
+  const categoryLabel = safeId.replace(/-/g, " ");
+  const title = `${categoryLabel} | VotreBoutique`;
+  const description = `Découvrez nos produits ${categoryLabel}.`;
 
   return {
     title,
@@ -91,13 +94,19 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function Page({ params, searchParams }) {
-  const { id } = params;
-  const page = parsePositiveNumber(getParamValue(searchParams, "page"), DEFAULT_PAGE);
-  const search = getParamValue(searchParams, "search") || "";
-  const sortBy = getParamValue(searchParams, "sortBy") || DEFAULT_SORT;
-  const sub = getParamValue(searchParams, "sub") || "";
+  const resolvedParams = await params;
+  const resolvedSearchParams = await searchParams;
 
-  const data = await fetchCategoryProducts({ id, page, search, sortBy, sub });
+  const rawId = getParamValue(resolvedParams, "id");
+  const id = typeof rawId === "string" ? rawId : "";
+  const page = parsePositiveNumber(getParamValue(resolvedSearchParams, "page"), DEFAULT_PAGE);
+  const search = getParamValue(resolvedSearchParams, "search") || "";
+  const sortBy = getParamValue(resolvedSearchParams, "sortBy") || DEFAULT_SORT;
+  const sub = getParamValue(resolvedSearchParams, "sub") || "";
+
+  const data = id
+    ? await fetchCategoryProducts({ id, page, search, sortBy, sub })
+    : EMPTY_RESPONSE;
 
   return (
     <CategoryClient
