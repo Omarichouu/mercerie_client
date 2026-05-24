@@ -34,7 +34,7 @@ export const category = [
       { name_search: "fils-cordon", name: "Cordon", name_ar: "حبل", img_url: "/sub_category/fill%20et%20crochet/Cordon-min.png" },
       { name_search: "fils-laine", name: "Laine", name_ar: "صوف", img_url: "/sub_category/fill%20et%20crochet/LAIN-min.png" },
       { name_search: "fils-accessoires", name: "Accessoires", name_ar: "اكسيسوار", img_url: "/sub_category/fill%20et%20crochet/accessoire-min.png" },
-      { name_search: "jute", name: "Jute", name_ar: "خيشة", img_url: "/sub_category/fill%20et%20crochet/561621899_1420682783390632_4067577228222845819_n.jpg" },
+      { name_search: "jute", name: "Jute", name_ar: "خيشة", img_url: "/sub_category/fill%20et%20crochet/IMG_8243.jpg" },
       { name_search: "fils-tissu-canevas", name: "Tissu & canevas", name_ar: "قماش وكانفاس", img_url: "/sub_category/fill%20et%20crochet/tissi-min.png" }
     ]
   },
